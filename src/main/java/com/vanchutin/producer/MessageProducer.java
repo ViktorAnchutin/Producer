@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
-public class MessageProducer implements CommandLineRunner {
+public class MessageProducer{
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -21,17 +21,8 @@ public class MessageProducer implements CommandLineRunner {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Autowired
-    EventGenerator eventGenerator;
-
-    public void run(String... args) throws Exception {
-        while(true) {
-            Event newEvent = eventGenerator.generate();
-            String message = objectMapper.writeValueAsString(newEvent);
-            log.info(String.format("Sending message...%s", message));
+    public void publish(String message){
             rabbitTemplate.convertAndSend("eventExchange", "atm.event", message);
-            Thread.sleep(1000);
-        }
     }
 
 }
